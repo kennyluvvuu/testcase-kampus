@@ -16,6 +16,7 @@ async function bootstrap() {
     .setTitle('Тестовое задание: backend для ToDo')
     .setDescription('API documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
