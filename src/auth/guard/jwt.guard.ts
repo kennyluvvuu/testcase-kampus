@@ -8,11 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-
-interface JwtPayload {
-  userId: string;
-  [key: string]: unknown;
-}
+import { JwtPayload } from '../types/jwt-payload.type';
 
 interface RequestWithUser extends Request {
   user?: JwtPayload;
