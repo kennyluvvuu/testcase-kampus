@@ -5,12 +5,12 @@ export const UserSchema = new Schema({
   password_hash: { type: String, required: true },
 });
 
-UserSchema.index({
-  email: 1,
-});
-
 export type User = InferSchemaType<typeof UserSchema>;
 export type UserDoc = User & { _id: { toString(): string } };
+
 export type UserResponse = Omit<User, 'password_hash'> & {
   id: string;
+};
+export type UserRequest = Omit<User, 'password_hash'> & {
+  password: string;
 };
