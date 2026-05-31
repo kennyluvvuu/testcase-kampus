@@ -7,11 +7,13 @@ import {
   RegisterUserResponseDto,
 } from './dto/register.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @ZodSerializerDto(LoginUserResponseDto)
   @HttpCode(200)
@@ -23,6 +25,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Public()
   @Post('register')
   @ZodSerializerDto(RegisterUserResponseDto)
   @ApiCreatedResponse({
