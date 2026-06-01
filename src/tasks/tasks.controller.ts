@@ -29,6 +29,7 @@ import { QueryTaskDto } from './dto/query-task.dto';
 import { TaskResponseDto, TaskListResponseDto } from './dto/task-response.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { JwtPayload } from 'src/common/types/jwt-payload.type';
+import { MongoIdPipe } from 'src/common/pipes/mongo-id.pipe';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
@@ -76,7 +77,10 @@ export class TasksController {
   @ApiNotFoundResponse({
     description: 'Task not found or does not belong to the current user.',
   })
-  async findOne(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+  async findOne(
+    @CurrentUser() user: JwtPayload,
+    @Param('id', MongoIdPipe) id: string,
+  ) {
     return this.tasksService.findOne(id, user.userId);
   }
 
@@ -93,7 +97,7 @@ export class TasksController {
   @ApiBadRequestResponse({ description: 'Invalid input data.' })
   async update(
     @CurrentUser() user: JwtPayload,
-    @Param('id') id: string,
+    @Param('id', MongoIdPipe) id: string,
     @Body() updateTaskDto: UpdateTaskRequestDto,
   ) {
     return this.tasksService.updateOne(id, user.userId, updateTaskDto);
@@ -108,7 +112,10 @@ export class TasksController {
   })
   @ApiNoContentResponse({ description: 'Task archived successfully.' })
   @ApiNotFoundResponse({ description: 'Task not found or already archived.' })
-  async remove(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+  async remove(
+    @CurrentUser() user: JwtPayload,
+    @Param('id', MongoIdPipe) id: string,
+  ) {
     await this.tasksService.deleteOne(id, user.userId);
   }
 }
