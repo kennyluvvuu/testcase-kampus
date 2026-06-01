@@ -1,0 +1,32 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-app
+    ports:
+      - '${PORT:-3000}:${PORT:-3000}'
+    environment:
+      PORT: ${PORT:-3000}
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017/test-todo}
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_key_here}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: always
+
+volumes:
+  mongodb_data:
