@@ -11,6 +11,16 @@ Backend for a mobile task management application built with NestJS, MongoDB, and
 - **Zod** — validation
 - **Swagger** — API documentation
 
+## Testing
+
+The project includes end-to-end tests written with Jest and Supertest. They run against an isolated MongoDB instance provided by `mongodb-memory-server`, so tests do not touch any real database.
+
+Run them with:
+
+```bash
+npm run test:e2e
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -71,13 +81,19 @@ npm run start:dev
 | GET | `/tasks/:id` | Get task by ID |
 | POST | `/tasks` | Create a new task |
 | PATCH | `/tasks/:id` | Update a task |
-| DELETE | `/tasks/:id` | Archive a task |
+| DELETE | `/tasks/:id` | Archive a task (auto-deleted after 7 days) |
 
 ### Other
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
+
+## Rate Limiting
+
+- Global: 60 requests per minute
+- Register endpoint: 5 requests per minute
+- Login endpoint: 10 requests per minute
 
 ## Query Parameters
 
@@ -145,6 +161,11 @@ const socket = io('http://localhost:3000/tasks', {
 });
 ```
 
+### Testing WebSocket with Postman
+1. New request → WebSocket
+2. URL: `ws://localhost:3000/tasks`
+3. Add header: `Authorization: Bearer <token>`
+
 ### Server → Client events
 
 | Event | Payload | Description |
@@ -158,4 +179,3 @@ const socket = io('http://localhost:3000/tasks', {
 - **Scoped query pattern** — archived tasks and tasks belonging to other users return 404 instead of 403, avoiding information leakage about resource existence
 - **Soft delete** — deleted tasks are archived via `deletedAt` timestamp and automatically removed from the database after 7 days using a MongoDB TTL index
 - **Global JWT guard** — all endpoints are protected by default, public routes are marked with `@Public()` decorator
-```
