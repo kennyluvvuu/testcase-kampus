@@ -27,8 +27,8 @@ import { CreateTaskRequestDto } from './dto/create-task.dto';
 import { UpdateTaskRequestDto } from './dto/update-task.dto';
 import { QueryTaskDto } from './dto/query-task.dto';
 import { TaskResponseDto, TaskListResponseDto } from './dto/task-response.dto';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { JwtPayload } from 'src/auth/types/jwt-payload.type';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { JwtPayload } from 'src/common/types/jwt-payload.type';
 
 @ApiTags('tasks')
 @ApiBearerAuth()

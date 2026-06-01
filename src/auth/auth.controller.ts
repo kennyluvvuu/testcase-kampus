@@ -15,7 +15,7 @@ import {
   ApiConflictResponse,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { Public } from './decorators/public.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('auth')

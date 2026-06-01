@@ -5,7 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
-import type { JwtPayload } from '../auth/types/jwt-payload.type';
+import type { JwtPayload } from '../common/types/jwt-payload.type';
 import type { TaskResponse } from './dto/task-response.dto';
 
 @WebSocketGateway({ cors: { origin: '*' }, namespace: '/tasks' })
