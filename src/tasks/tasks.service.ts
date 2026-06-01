@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task, TaskDoc } from './tasks.schema';
@@ -6,12 +6,16 @@ import { CreateTaskRequest } from './dto/create-task.dto';
 import { UpdateTaskRequest } from './dto/update-task.dto';
 import { QueryTask } from './dto/query-task.dto';
 import { TaskResponse, TaskListResponse } from './dto/task-response.dto';
+import { TasksGateway } from './tasks.gateway';
 
 // scoped query pattern
 // from the user perspective, archived and other users tasks simply dont exist
 @Injectable()
 export class TasksService {
-  constructor(@InjectModel('Task') private readonly taskModel: Model<Task>) {}
+  constructor(
+    @InjectModel('Task') private readonly taskModel: Model<Task>,
+    @Optional() private readonly tasksGateway?: TasksGateway,
+  ) {}
 
   private toTaskResponse(task: TaskDoc): TaskResponse {
     return {
@@ -35,7 +39,9 @@ export class TasksService {
       description: task.description,
       userId,
     });
-    return this.toTaskResponse(createdTask.toObject());
+    const response = this.toTaskResponse(createdTask.toObject());
+    this.tasksGateway?.notifyTaskCreated(userId, response);
+    return response;
   }
 
   async findAll(userId: string, query: QueryTask): Promise<TaskListResponse> {
@@ -85,7 +91,9 @@ export class TasksService {
     if (!updated) {
       throw new NotFoundException('Task not found');
     }
-    return this.toTaskResponse(updated.toObject());
+    const response = this.toTaskResponse(updated.toObject());
+    this.tasksGateway?.notifyTaskUpdated(userId, response);
+    return response;
   }
 
   async deleteOne(id: string, userId: string): Promise<void> {
@@ -101,5 +109,6 @@ export class TasksService {
     if (!updated) {
       throw new NotFoundException('Task not found');
     }
+    this.tasksGateway?.notifyTaskDeleted(userId, id);
   }
 }
