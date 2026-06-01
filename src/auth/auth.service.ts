@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -28,7 +28,7 @@ export class AuthService {
       user.password,
     );
     if (!isValid) {
-      throw new ConflictException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
     const token = await this.jwtService.signAsync({ userId });
     return { token };
