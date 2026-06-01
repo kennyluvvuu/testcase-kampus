@@ -4,8 +4,8 @@ export const TasksSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    // userId хранит связь с пользователем, но в текущей реализации мы ее не используем
-    // В будущих версиях возможно понадобится использовать populate, поэтому оставил
+    // userId stores the link to the user, but it is not used in the current implementation
+    // In future versions, populate may be needed, so I left it here
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: {
       type: String,
@@ -17,14 +17,14 @@ export const TasksSchema = new Schema(
   { timestamps: true },
 );
 
-// индекс для поиска задач по пользователю, статусу и удалению, статус опционален так что в индексе последний
+// index for searching tasks by user, status, and deletion; status is optional, so it goes last in the index
 TasksSchema.index({
   userId: 1,
   deletedAt: 1,
   status: 1,
 });
 
-// ttl индекс для автоматического удаления из архива
+// TTL index for automatic deletion from archive
 TasksSchema.index(
   {
     deletedAt: 1,
