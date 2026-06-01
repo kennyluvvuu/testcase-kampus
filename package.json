@@ -1,8 +1,8 @@
 {
   "name": "test-todo",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Test task for work",
+  "author": "Sergey Sidlik",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
