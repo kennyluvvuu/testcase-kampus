@@ -85,7 +85,7 @@ export class TasksService {
   ): Promise<TaskResponse> {
     const updated = await this.taskModel
       .findOneAndUpdate({ _id: id, userId, deletedAt: null }, task, {
-        new: true,
+        returnDocument: 'after',
       })
       .exec();
     if (!updated) {
@@ -102,7 +102,7 @@ export class TasksService {
         { _id: id, userId, deletedAt: null },
         { deletedAt: new Date() },
         {
-          new: true,
+          returnDocument: 'after',
         },
       )
       .exec();
