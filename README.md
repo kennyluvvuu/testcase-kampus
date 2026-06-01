@@ -162,8 +162,8 @@ const socket = io('http://localhost:3000/tasks', {
 ```
 
 ### Testing WebSocket with Postman
-1. New request → WebSocket
-2. URL: `ws://localhost:3000/tasks`
+1. New request → Socket.IO
+2. URL: `localhost:3000/tasks`
 3. Add header: `Authorization: Bearer <token>`
 
 ### Server → Client events
