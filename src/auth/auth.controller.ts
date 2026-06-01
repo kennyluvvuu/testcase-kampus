@@ -8,12 +8,17 @@ import {
 } from './dto/register.dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // rate limited to 10 requests per minute
   @Public()
+  @Throttle({
+    default: { ttl: 60000, limit: 10 },
+  })
   @Post('login')
   @ZodSerializerDto(LoginUserResponseDto)
   @HttpCode(200)
@@ -25,7 +30,11 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  // rate limited to 5 requests per minute
   @Public()
+  @Throttle({
+    default: { ttl: 60000, limit: 5 },
+  })
   @Post('register')
   @ZodSerializerDto(RegisterUserResponseDto)
   @ApiCreatedResponse({

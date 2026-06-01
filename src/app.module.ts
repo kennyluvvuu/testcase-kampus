@@ -8,10 +8,17 @@ import { JwtAuthGuard } from './auth/guard/jwt.guard';
 import { DatabaseModule } from './database/database.module';
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
     DatabaseModule,
     AuthModule,
     UsersModule,
@@ -19,6 +26,10 @@ import { UsersModule } from './users/users.module';
   ],
   controllers: [AppController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
