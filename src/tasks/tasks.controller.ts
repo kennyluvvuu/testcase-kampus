@@ -16,8 +16,10 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ZodSerializerDto } from 'nestjs-zod';
 import { TasksService } from './tasks.service';
@@ -30,6 +32,7 @@ import type { JwtPayload } from 'src/auth/types/jwt-payload.type';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Missing or invalid JWT token.' })
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -58,7 +61,7 @@ export class TasksController {
     description: 'List of active tasks returned successfully.',
     type: TaskListResponseDto,
   })
-  @ApiBadRequestResponse({ description: 'Invalid input query.' })
+  @ApiBadRequestResponse({ description: 'Invalid query parameters.' })
   async findAll(@CurrentUser() user: JwtPayload, @Query() query: QueryTaskDto) {
     return this.tasksService.findAll(user.userId, query);
   }
@@ -70,7 +73,9 @@ export class TasksController {
     description: 'Task found and returned.',
     type: TaskResponseDto,
   })
-  @ApiNotFoundResponse({ description: 'Task not found.' })
+  @ApiNotFoundResponse({
+    description: 'Task not found or does not belong to the current user.',
+  })
   async findOne(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     return this.tasksService.findOne(id, user.userId);
   }
@@ -82,10 +87,10 @@ export class TasksController {
     description: 'Task updated successfully.',
     type: TaskResponseDto,
   })
-  @ApiNotFoundResponse({ description: 'Task not found.' })
-  @ApiBadRequestResponse({
-    description: 'Invalid input data.',
+  @ApiNotFoundResponse({
+    description: 'Task not found or does not belong to the current user.',
   })
+  @ApiBadRequestResponse({ description: 'Invalid input data.' })
   async update(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
@@ -96,8 +101,12 @@ export class TasksController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Archive a task (soft delete)' })
-  @ApiOkResponse({ description: 'Task archived successfully.' })
+  @ApiOperation({
+    summary: 'Archive a task (soft delete)',
+    description:
+      'Sets `deletedAt` timestamp on the task. Archived tasks are permanently removed from the database after 7 days via a TTL index.',
+  })
+  @ApiNoContentResponse({ description: 'Task archived successfully.' })
   @ApiNotFoundResponse({ description: 'Task not found or already archived.' })
   async remove(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     await this.tasksService.deleteOne(id, user.userId);
